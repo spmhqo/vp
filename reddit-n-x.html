@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reddit & X Research Task Creator</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 110px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      .sub-header { font-size: 0.95rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Reddit & X Research Task Creator</h1>
+      <p class="sub-header">(for networking in social media sites)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input Card 1 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Primary Keyword</span>
+          <button class="clear-btn" onclick="resetInput('inputPrimaryKey')">Reset</button>
+        </div>
+        <label for="inputPrimaryKey">[INSERT PRIMARY KEYWORD]</label>
+        <textarea id="inputPrimaryKey" class="dynamic-input" placeholder="Type or paste the primary keyword here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 2 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Secondary Keywords</span>
+          <button class="clear-btn" onclick="resetInput('inputSecondaryKeys')">Reset</button>
+        </div>
+        <label for="inputSecondaryKeys">[INSERT SECONDARY KEYWORDS]</label>
+        <textarea id="inputSecondaryKeys" class="dynamic-input" placeholder="Type or paste the secondary keywords here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Cards Container -->
+      <div id="promptsContainer">
+        <!-- Prompts dynamically generated by JavaScript -->
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const templates = [
+      {
+        id: 1,
+        title: "Reddit Research Task Creator",
+        text: `Reddit Research Task Creator
+
+Create a recurring Task named "Reddit Research" that runs daily at [INSERT TIME] India Standard Time (IST).
+
+Research Inputs
+- Primary Keyword: [INSERT PRIMARY KEYWORD]
+- Secondary Keywords: [INSERT SECONDARY KEYWORDS]
+
+Instructions
+
+Search Reddit using multiple relevant search queries derived from these keywords. Find relevant posts published within the previous 24 hours.
+
+Return 5–15 relevant posts per report, prioritizing useful insights, questions, problems, experiences, opinions, and emerging trends related to the Primary Keyword. Aim for at least 5 posts when available, but never include irrelevant posts just to meet the minimum.
+
+For each post, provide:
+1. Direct URL to the original Reddit post.
+2. Publication date and time, if available.
+3. A concise summary.
+4. The key insight, problem, question, or experience discussed.
+
+URL Verification and Accuracy
+- Verify that every URL points directly to the original Reddit post and that the post exists.
+- Never fabricate posts, URLs, publication times, or data.
+- Exclude posts whose URLs cannot be verified.
+- If fewer than 5 relevant, verifiable posts are found, return only those found and state the actual count.
+- If search access or verification is limited, disclose the limitation clearly. Do not imply that the search was exhaustive if it was not.
+- Avoid duplicate posts.
+
+Do not write, suggest, or publish replies.
+
+Create the recurring Task directly if supported. Confirm its creation, daily recurrence, execution time, and instructions. If direct creation is unavailable, explain the limitation and provide the exact steps needed to create it. Never claim the Task is active unless creation is confirmed.`
+      },
+      {
+        id: 2,
+        title: "X Research Task Creator",
+        text: `X Research Task Creator
+
+Create a recurring Task named "X Research" that runs daily at [INSERT TIME] India Standard Time (IST).
+
+Research Inputs
+- Primary Keyword: [INSERT PRIMARY KEYWORD]
+- Secondary Keywords: [INSERT SECONDARY KEYWORDS]
+
+Instructions
+
+Search X using multiple relevant search queries derived from these keywords. Find relevant posts published within the previous 24 hours.
+
+Return 5–15 relevant posts per report, prioritizing useful insights, questions, problems, experiences, opinions, and emerging trends related to the Primary Keyword. Aim for at least 5 posts when available, but never include irrelevant posts just to meet the minimum.
+
+For each post, provide:
+1. Direct URL to the original X post.
+2. Publication date and time, if available.
+3. A concise summary.
+4. The key insight, problem, question, or experience discussed.
+
+URL Verification and Accuracy
+- Verify that every URL points directly to the original X post and that the post exists.
+- Never fabricate posts, URLs, publication times, or data.
+- Exclude posts whose URLs cannot be verified.
+- If fewer than 5 relevant, verifiable posts are found, return only those found and state the actual count.
+- If search access or verification is limited, disclose the limitation clearly. Do not imply that the search was exhaustive if it was not.
+- Avoid duplicate posts.
+
+Do not write, suggest, or publish replies.
+
+Create the recurring Task directly if supported. Confirm its creation, daily recurrence, execution time, and instructions. If direct creation is unavailable, explain the limitation and provide the exact steps needed to create it. Never claim the Task is active unless creation is confirmed.
+
+The research instructions are now ready. Create a recurring Scheduled Task named "Social Networking Opportunities" using the finalized instructions in this conversation.
+
+Run it every day at [YOUR PREFERRED TIME] India Standard Time (IST).
+
+Return the results using the available Scheduled Task reporting mechanism.
+
+Before finalizing, confirm the recurrence and task instructions. If you cannot create the task directly, guide me to the Scheduled interface and tell me exactly what to enter.
+
+Do not claim that the task is active until its creation is confirmed.`
+      }
+    ];
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      templates.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.style.marginTop = '30px';
+        card.innerHTML = `
+          <div class="step-header">
+            <span class="step-label">Prompt #${t.id}</span>
+          </div>
+          <div class="prompt-content" id="p${t.id}"></div>
+          <button class="btn copy-btn" onclick="copyText('p${t.id}', this)">
+            <span>Copy Prompt #${t.id}</span>
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updatePrompts() {
+      const primaryVal = document.getElementById('inputPrimaryKey').value.trim() || "[INSERT PRIMARY KEYWORD]";
+      const secondaryVal = document.getElementById('inputSecondaryKeys').value.trim() || "[INSERT SECONDARY KEYWORDS]";
+
+      templates.forEach(t => {
+        let updatedText = t.text;
+        updatedText = updatedText.split('[INSERT PRIMARY KEYWORD]').join(primaryVal);
+        updatedText = updatedText.split('[INSERT SECONDARY KEYWORDS]').join(secondaryVal);
+        document.getElementById(`p${t.id}`).innerText = updatedText;
+      });
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
