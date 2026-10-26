@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Plan And Write Viral Posts</title>
+  <title>Plan And Write Viral Posts - (for social media sites)</title>
   <link rel="icon" href="spm.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,7 +55,6 @@
       font-weight: 800;
       letter-spacing: -0.02em;
       color: #fff;
-      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
@@ -111,27 +110,23 @@
       margin-bottom: 22px;
       line-height: 1.6;
       word-break: break-all;
+      overflow-wrap: anywhere;
       max-height: 520px;
       overflow-y: auto;
-    }
-
-    .prompt-content a {
-      color: var(--accent-primary);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .prompt-content a:hover {
-      color: var(--accent-hover);
-      text-decoration: underline;
     }
 
     .prompt-content::-webkit-scrollbar { width: 8px; }
     .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
     .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
 
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      width: 100%;
+    }
+
     .btn {
-      padding: 14px 32px;
+      padding: 14px 28px;
       border-radius: 10px;
       font-weight: 700;
       font-size: 1rem;
@@ -141,7 +136,7 @@
       justify-content: center;
       gap: 10px;
       transition: all 0.2s;
-      width: 100%;
+      flex: 1;
       text-decoration: none;
       border: none;
     }
@@ -163,6 +158,17 @@
       color: white;
     }
 
+    .link-btn {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-success);
+      border: 1px solid var(--accent-success);
+    }
+
+    .link-btn:hover {
+      background: var(--accent-success);
+      color: #020617;
+    }
+
     .footer {
       margin-top: 80px;
       text-align: center;
@@ -179,6 +185,7 @@
       .sub-header { font-size: 1rem; }
       .step-card { padding: 22px; }
       .prompt-content { font-size: 0.85rem; }
+      .btn-group { flex-direction: column; }
     }
   </style>
 </head>
@@ -191,29 +198,10 @@
     </header>
 
     <div class="prompt-workflow">
-      
-      <!-- Prompt #1 Card -->
-      <div class="step-card">
-        <div class="step-header">
-          <span class="step-label">Identify Viral Posts</span>
-        </div>
-        <div class="prompt-content" id="p1">https://spmhqo.github.io/vp/identify-viral-posts.html</div>
-        <button class="btn copy-btn" onclick="copyText('p1', this)">
-          <span>Copy Identify Viral Posts</span>
-        </button>
+      <!-- Prompt Result Cards -->
+      <div id="promptsContainer">
+        <!-- Prompts injected by JavaScript -->
       </div>
-
-      <!-- Prompt #2 Card -->
-      <div class="step-card">
-        <div class="step-header">
-          <span class="step-label">Write Viral Posts</span>
-        </div>
-        <div class="prompt-content" id="p2">https://spmhqo.github.io/vp/create-viral-post.html</div>
-        <button class="btn copy-btn" onclick="copyText('p2', this)">
-          <span>Copy Write Viral Posts</span>
-        </button>
-      </div>
-
     </div>
 
     <footer class="footer">
@@ -222,8 +210,56 @@
   </div>
 
   <script>
+    const promptsData = [
+      {
+        id: 1,
+        name: "Identify Viral Posts",
+        url: "https://spmhqo.github.io/vp/identify-viral-posts.html",
+        text: `https://spmhqo.github.io/vp/identify-viral-posts.html`
+      },
+      {
+        id: 2,
+        name: "Write Viral Posts",
+        url: "https://spmhqo.github.io/vp/create-viral-post.html",
+        text: `https://spmhqo.github.io/vp/create-viral-post.html`
+      }
+    ];
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      promptsData.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = `
+          <div class="step-header">
+            <span class="step-label">${p.name}</span>
+          </div>
+          <div class="prompt-content" id="p${p.id}"></div>
+          <div class="btn-group">
+            <button class="btn copy-btn" onclick="copyText('p${p.id}', this)">
+              <span>Copy Prompt</span>
+            </button>
+            <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="btn link-btn">
+              <span>Open Link</span>
+            </a>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderPrompts() {
+      promptsData.forEach(p => {
+        const element = document.getElementById(`p${p.id}`);
+        if (element) {
+          element.innerText = p.text;
+        }
+      });
+    }
+
     function copyText(id, btn) {
-      const text = document.getElementById(id).innerText.trim();
+      const text = document.getElementById(id).innerText;
       navigator.clipboard.writeText(text).then(() => {
         const originalText = btn.innerHTML;
         btn.innerHTML = `<span>Copied to Clipboard!</span>`;
@@ -235,6 +271,12 @@
         }, 2000);
       });
     }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+      renderPrompts();
+    };
   </script>
 </body>
 </html>
