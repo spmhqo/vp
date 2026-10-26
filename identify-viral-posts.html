@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Identify Viral Posts</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    /* Navigation Sections */
+    .nav-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 35px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px 25px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nav-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      min-width: 130px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .nav-link-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--card-border);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link-btn:hover {
+      background: rgba(34, 211, 238, 0.15);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      scroll-margin-top: 30px;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Single line text input */
+    input.dynamic-input {
+      height: 52px;
+    }
+
+    /* Select Dropdown */
+    select.dynamic-input {
+      height: 52px;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2322d3ee'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 18px;
+      padding-right: 45px;
+    }
+
+    select.dynamic-input option {
+      background-color: #0f172a;
+      color: #fff;
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+      .nav-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .nav-title { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Identify Viral Posts</h1>
+      <p class="sub-header">(of a competitor)</p>
+    </header>
+
+    <!-- Navigations: Inputs Navigation & Prompts Navigation -->
+    <div class="nav-wrapper">
+      <!-- Navigation 1: Input Fields -->
+      <nav class="nav-bar">
+        <span class="nav-title">Inputs:</span>
+        <div class="nav-links">
+          <a href="#input-username-card" class="nav-link-btn">[user's Name]</a>
+          <a href="#input-days-card" class="nav-link-btn">[Number of days]</a>
+        </div>
+      </nav>
+      <!-- Navigation 2: Prompts -->
+      <nav class="nav-bar">
+        <span class="nav-title">Prompts:</span>
+        <div class="nav-links">
+          <a href="#prompt-top10-card" class="nav-link-btn">Top 10 Viral Content Finder</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="prompt-workflow">
+      
+      <!-- Input Field 1: Single Line Input -->
+      <div class="step-card" id="input-username-card">
+        <div class="step-header">
+          <span class="step-label">user's Name</span>
+          <button class="clear-btn" onclick="resetInput('inputUserName')">Reset</button>
+        </div>
+        <label for="inputUserName">[user's Name]</label>
+        <input type="text" id="inputUserName" class="dynamic-input" placeholder="Enter user's name here..." oninput="updatePrompts()" />
+      </div>
+
+      <!-- Input Field 2: Selection of Digits -->
+      <div class="step-card" id="input-days-card">
+        <div class="step-header">
+          <span class="step-label">Number of days</span>
+          <button class="clear-btn" onclick="resetInput('inputDays')">Reset</button>
+        </div>
+        <label for="inputDays">[Number of days]</label>
+        <select id="inputDays" class="dynamic-input" onchange="updatePrompts()">
+          <option value="">-- Select number of days --</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="7">7</option>
+          <option value="10">10</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="21">21</option>
+          <option value="30">30</option>
+          <option value="45">45</option>
+          <option value="60">60</option>
+          <option value="90">90</option>
+          <option value="120">120</option>
+          <option value="180">180</option>
+          <option value="365">365</option>
+        </select>
+      </div>
+
+      <!-- Prompt Card -->
+      <div class="step-card" id="prompt-top10-card">
+        <div class="step-header">
+          <span class="step-label">Top 10 Viral Content Finder</span>
+        </div>
+        <div class="prompt-content" id="promptContent1"></div>
+        <button class="btn copy-btn" onclick="copyText('promptContent1', this)">
+          <span>Copy Prompt</span>
+        </button>
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const promptTemplate = `Fine out the Top 10 Viral pieces of content of [user's Name]'s page in the last [Number of days] days.`;
+
+    function updatePrompts() {
+      const userName = document.getElementById('inputUserName').value.trim() || "[user's Name]";
+      const numDays = document.getElementById('inputDays').value.trim() || "[Number of days]";
+
+      let updatedText = promptTemplate;
+      updatedText = updatedText.split("[user's Name]").join(userName);
+      updatedText = updatedText.split("[Number of days]").join(numDays);
+
+      document.getElementById('promptContent1').innerText = updatedText;
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reddit Post Compliance Reviewer</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 110px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Reddit Post Compliance Reviewer</h1>
+      <p class="sub-header">(Standalone Reusable Prompt)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input Card 1 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 1</span>
+          <button class="clear-btn" onclick="resetInput('inputPost')">Reset</button>
+        </div>
+        <label for="inputPost">INPUT 1 — POST TO PUBLISH</label>
+        <textarea id="inputPost" class="dynamic-input" placeholder="[PASTE THE COMPLETE POST TO PUBLISH HERE]" oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 2 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 2</span>
+          <button class="clear-btn" onclick="resetInput('inputCommunityRules')">Reset</button>
+        </div>
+        <label for="inputCommunityRules">INPUT 2 — COMMUNITY RULES</label>
+        <textarea id="inputCommunityRules" class="dynamic-input" placeholder="[PASTE THE COMPLETE RULES OF THE TARGET SUBREDDIT HERE]" oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 3 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 3</span>
+          <button class="clear-btn" onclick="resetInput('inputRulesUrl')">Reset</button>
+        </div>
+        <label for="inputRulesUrl">INPUT 3 — REDDIT RULES URL</label>
+        <textarea id="inputRulesUrl" class="dynamic-input" placeholder="[PASTE THE OFFICIAL REDDIT RULES OR POLICY URL HERE]" oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Cards -->
+      <div id="promptsContainer">
+        <!-- Prompts injected by JavaScript -->
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const templates = [
+      {
+        id: 1,
+        text: `ROLE
+
+Act as a careful Reddit Content Compliance Reviewer. Your task is to review a proposed Reddit post before publication and determine whether it complies with:
+
+1. Reddit's applicable platform-wide rules and policies.
+2. The specific rules of the target Reddit community (subreddit).
+
+Your goal is to help me publish content that is honest, sincere, natural, relevant, and compliant. Do not help me manipulate engagement, evade moderation, disguise commercial intent, or bypass community restrictions.
+
+INPUTS
+
+INPUT 1 — POST TO PUBLISH
+[PASTE THE COMPLETE POST TO PUBLISH HERE]
+
+INPUT 2 — COMMUNITY RULES
+[PASTE THE COMPLETE RULES OF THE TARGET SUBREDDIT HERE]
+
+INPUT 3 — REDDIT RULES URL
+[PASTE THE OFFICIAL REDDIT RULES OR POLICY URL HERE]
+
+REVIEW INSTRUCTIONS
+
+Step 1: Review the supplied rules
+
+Read the community rules provided in Input 2.
+
+Use the URL in Input 3 to access and review the relevant official Reddit rules and policies.
+
+If web access is available, open the URL and inspect the relevant content. Follow links to additional official Reddit policy pages only when necessary to assess the post.
+
+If a page cannot be accessed, the rules are incomplete, or a relevant policy cannot be verified, clearly disclose the limitation. Never pretend to have checked a source you could not access.
+
+Distinguish between:
+- Explicitly stated rules.
+- Reasonable interpretations of those rules.
+- Uncertainties requiring moderator clarification.
+
+Do not invent rules or assume that every subreddit follows the same self-promotion policy.
+
+Step 2: Review the post against Reddit-wide rules
+
+Check the proposed post for relevant violations or risks involving, where applicable:
+
+- Spam, repetitive posting, or unwanted solicitation.
+- Harassment, threats, or abusive content.
+- Privacy violations or disclosure of personal information.
+- Deceptive claims, impersonation, or misleading representations.
+- Prohibited or restricted content.
+- Manipulation of votes, comments, engagement, or moderation systems.
+- Other relevant official Reddit rules and policies.
+
+Apply only the rules relevant to the actual post. Do not flag harmless content merely because it mentions a product, website, software tool, or personal project.
+
+Step 3: Review the post against community rules
+
+Evaluate the post against every relevant rule supplied in Input 2.
+
+Pay particular attention to:
+
+- Whether the post topic is relevant to the community.
+- Whether self-promotion, product announcements, links, or beta-testing invitations are permitted.
+- Whether the post belongs in a designated thread or requires a particular flair.
+- Whether promotional frequency or account requirements are specified.
+- Whether the post asks for feedback, participation, or other actions in a way that violates community rules.
+
+Do not assume that being the owner or moderator of a subreddit automatically exempts a post from Reddit-wide rules.
+
+Step 4: Assess intent and presentation
+
+Determine whether the post appears consistent with an honest, sincere, natural, and organic contribution.
+
+Check whether it:
+
+- Clearly represents the author's relationship to the product.
+- Makes claims that are unsupported or potentially misleading.
+- Disguises advertising as an independent recommendation.
+- Repeatedly pushes a product without providing relevant value.
+- Requests votes, positive reviews, or artificial engagement.
+- Makes participation requirements clear.
+
+Do not classify a post as a violation merely because the author has a legitimate interest in their own product. Evaluate the actual content and applicable rules.
+
+Step 5: Identify each potential issue
+
+For every issue identified, provide:
+
+- The relevant excerpt from the proposed post.
+- The rule or policy that may apply.
+- The source of the rule.
+- Whether the issue is a confirmed violation, a potential violation, or an uncertainty.
+- The reason for your assessment.
+- A specific recommendation for resolving the issue.
+
+Distinguish a rule violation from a recommendation that would merely improve clarity, relevance, or readability.
+
+Step 6: Recommend the next action
+
+Choose exactly one overall status:
+
+- **PASS:** No material violation identified based on the rules and sources successfully reviewed.
+- **PASS WITH CAUTION:** No confirmed violation identified, but one or more uncertainties or contextual risks remain.
+- **REVISE BEFORE PUBLISHING:** The post contains a likely or confirmed violation, or requires a material change to comply.
+- **CANNOT DETERMINE:** Essential rules or sources could not be verified sufficiently to make a reliable assessment.
+
+A PASS does not guarantee that Reddit or a moderator will approve the post. Moderators may apply additional context-specific judgments.
+
+Step 7: Provide a corrected version when needed
+
+If the post needs revision, propose a minimally edited version that preserves the author's original meaning, voice, and intent while addressing the identified issues.
+
+Do not add fabricated claims, testimonials, endorsements, or promises.
+
+Do not remove a material disclosure simply to make the post appear less promotional.
+
+If the post already complies, do not rewrite it unnecessarily. State that no compliance-related rewrite is needed.
+
+REQUIRED OUTPUT FORMAT
+
+1. Overall Verdict
+State one of the four statuses and briefly explain the reason.
+
+2. Reddit-Wide Rules Assessment
+Summarize the relevant rules checked, findings, and source-access limitations.
+
+3. Community Rules Assessment
+Identify the relevant community rules and explain whether the post complies.
+
+4. Issues Found
+For each issue, include:
+- Severity: High / Medium / Low.
+- Classification: Confirmed violation / Potential violation / Uncertainty / Improvement suggestion.
+- Post excerpt.
+- Applicable rule and source.
+- Explanation.
+- Recommended action.
+
+If no issues are found, explicitly state that.
+
+5. Recommended Revision
+Provide the complete revised post only if a revision is needed. Otherwise state: "No compliance-related revision is necessary."
+
+6. Pre-Publication Checklist
+Provide a short checklist of any remaining actions, such as adding a required flair, removing a prohibited link, clarifying a disclosure, or asking the moderators for clarification.
+
+7. Final Recommendation
+Clearly state whether I should publish the original post, publish the revised version, wait for clarification, or refrain from publishing.
+
+FINAL REQUIREMENTS
+
+- Be objective, cautious, and evidence-based.
+- Review Reddit-wide rules and community rules separately.
+- Prefer official Reddit sources and the supplied community rules.
+- Cite accessible sources and distinguish verified facts from interpretation.
+- Never claim that the post is guaranteed to be approved.
+- Never invent a rule, citation, source, or moderator decision.
+- Do not rewrite the post solely to make it more persuasive or viral.
+- Preserve the author's honest, sincere, natural, and organic communication style.
+- If the supplied information is insufficient, state exactly what is missing rather than guessing.`
+      },
+      {
+        id: 2,
+        text: `https://redditinc.com/policies/reddit-rules?utm_source=chatgpt.com`
+      }
+    ];
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      templates.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = `
+          <div class="step-header">
+            <span class="step-label">Prompt #${t.id}</span>
+          </div>
+          <div class="prompt-content" id="p${t.id}"></div>
+          <button class="btn copy-btn" onclick="copyText('p${t.id}', this)">
+            <span>Copy Prompt #${t.id}</span>
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updatePrompts() {
+      const postVal = document.getElementById('inputPost').value.trim() || "[PASTE THE COMPLETE POST TO PUBLISH HERE]";
+      const commRulesVal = document.getElementById('inputCommunityRules').value.trim() || "[PASTE THE COMPLETE RULES OF THE TARGET SUBREDDIT HERE]";
+      const rulesUrlVal = document.getElementById('inputRulesUrl').value.trim() || "[PASTE THE OFFICIAL REDDIT RULES OR POLICY URL HERE]";
+
+      templates.forEach(t => {
+        let updatedText = t.text;
+        if (t.id === 1) {
+          updatedText = updatedText.split('[PASTE THE COMPLETE POST TO PUBLISH HERE]').join(postVal);
+          updatedText = updatedText.split('[PASTE THE COMPLETE RULES OF THE TARGET SUBREDDIT HERE]').join(commRulesVal);
+          updatedText = updatedText.split('[PASTE THE OFFICIAL REDDIT RULES OR POLICY URL HERE]').join(rulesUrlVal);
+        }
+        document.getElementById(`p${t.id}`).innerText = updatedText;
+      });
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
