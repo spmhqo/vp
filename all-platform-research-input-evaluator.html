@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Social Platform Research Input Evaluator</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.7rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Social Platform Research Input Evaluator</h1>
+      <p class="sub-header">(for task)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input 1: Platform -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 1</span>
+          <button class="clear-btn" onclick="resetInput('inputPlatform')">Reset</button>
+        </div>
+        <label for="inputPlatform">Platform: [INSERT PLATFORM NAME]</label>
+        <textarea id="inputPlatform" class="dynamic-input" placeholder="Type or paste platform name here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input 2: Community Name -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 2</span>
+          <button class="clear-btn" onclick="resetInput('inputCommName')">Reset</button>
+        </div>
+        <label for="inputCommName">Community Name: [INSERT COMMUNITY NAME]</label>
+        <textarea id="inputCommName" class="dynamic-input" placeholder="Type or paste community name here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input 3: Community Description -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 3</span>
+          <button class="clear-btn" onclick="resetInput('inputCommDesc')">Reset</button>
+        </div>
+        <label for="inputCommDesc">Community Description: [INSERT COMMUNITY DESCRIPTION]</label>
+        <textarea id="inputCommDesc" class="dynamic-input" placeholder="Type or paste community description here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input 4: Primary Keyword -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 4</span>
+          <button class="clear-btn" onclick="resetInput('inputPrimaryKey')">Reset</button>
+        </div>
+        <label for="inputPrimaryKey">Primary Keyword: [INSERT PRIMARY KEYWORD]</label>
+        <textarea id="inputPrimaryKey" class="dynamic-input" placeholder="Type or paste primary keyword here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input 5: Secondary Keywords -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 5</span>
+          <button class="clear-btn" onclick="resetInput('inputSecondaryKeys')">Reset</button>
+        </div>
+        <label for="inputSecondaryKeys">Secondary Keywords: [INSERT SECONDARY KEYWORDS]</label>
+        <textarea id="inputSecondaryKeys" class="dynamic-input" placeholder="Type or paste secondary keywords here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Card -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Prompt #1</span>
+        </div>
+        <div class="prompt-content" id="p1"></div>
+        <button class="btn copy-btn" onclick="copyText('p1', this)">
+          <span>Copy Prompt #1</span>
+        </button>
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const promptTemplate = `1. Platform
+
+Platform: [INSERT PLATFORM NAME]
+
+2. Community Context
+
+Community Name: [INSERT COMMUNITY NAME]
+
+Community Description: [INSERT COMMUNITY DESCRIPTION]
+
+3. Proposed Research Inputs
+
+Primary Keyword: [INSERT PRIMARY KEYWORD]
+
+Secondary Keywords:
+
+[INSERT SECONDARY KEYWORDS]
+
+4. Objective
+
+Evaluate whether the proposed Primary Keyword and Secondary Keywords are suitable inputs for a recurring research task on the specified platform.
+
+The purpose of the research is to discover relevant public discussions that can inform the community's interests, including useful insights, genuine questions, practical problems, personal experiences, opinions, unmet needs, and emerging trends.
+
+Assess the proposed inputs in relation to:
+
+1. The community's scope, purpose, and interests.
+2. The practical usefulness of the keywords for discovering relevant discussions on the specified platform.
+3. The ability of the keyword set to cover the intended research territory without becoming unnecessarily broad, repetitive, or unfocused.
+
+Evaluate the inputs before recommending any changes. Do not create or activate a recurring task during this evaluation.
+
+5. Evaluation Instructions
+
+5.1 Community Alignment
+
+Determine whether the keywords reflect the community's purpose, subject matter, and practical interests.
+
+Prioritise keywords that can uncover meaningful discussions, real-world challenges, questions, experiences, experiments, and lessons rather than content that is purely promotional or irrelevant.
+
+5.2 Primary Keyword Suitability
+
+Assess whether the Primary Keyword accurately represents the intended research territory and provides a useful starting point for discovering relevant discussions.
+
+Consider its clarity, scope, relevance, and practical search usefulness on the specified platform.
+
+If a different Primary Keyword would be more suitable, recommend one and explain why. Do not recommend changing it merely to improve its wording.
+
+5.3 Secondary Keyword Relevance
+
+Assess every Secondary Keyword for its relevance to the community and its potential to uncover useful discussions.
+
+Determine whether each keyword represents a meaningful research angle, a distinct search intent, or a useful alternative way of expressing the same underlying topic.
+
+5.4 Platform-Specific Search Practicality
+
+Evaluate the keywords in the context of the specified platform.
+
+Consider how people typically express questions, problems, experiences, opinions, and interests on that platform.
+
+Where relevant, assess the usefulness of:
+
+- Broad topic keywords.
+- Natural-language questions.
+- Problem-focused search phrases.
+- Experience- and outcome-focused phrases.
+- Common terminology used in the relevant field.
+- Platform-specific search operators, hashtags, communities, groups, threads, or other discovery features, where supported.
+
+Recommend alternative search phrases when they are likely to improve discovery while preserving the original intent.
+
+Do not assume that every platform supports the same search features or provides complete access to public content. Distinguish verified platform capabilities from assumptions or recommendations.
+
+5.5 Research Intent Coverage
+
+Determine whether the keywords collectively cover the important aspects of the intended research territory.
+
+Identify meaningful gaps in coverage and assess whether some areas receive disproportionate attention.
+
+Consider the community's actual interests rather than forcing every keyword set into a generic framework.
+
+5.6 Redundancy and Search Diversity
+
+Identify keywords that overlap substantially or are likely to retrieve similar discussions.
+
+Distinguish unnecessary duplication from useful overlap that supports different search approaches or captures distinct user intentions.
+
+Recommend changes that improve search diversity without expanding the list unnecessarily.
+
+5.7 Primary and Secondary Keyword Relationship
+
+Determine whether the Secondary Keywords appropriately expand the Primary Keyword's research territory.
+
+Assess whether the keyword set forms a coherent structure or whether the Secondary Keywords broaden the research so much that the Primary Keyword no longer provides a meaningful organising focus.
+
+If the broader subject is a better fit for the community, explain why and recommend an appropriate alternative.
+
+5.8 Daily Research Suitability
+
+Assess whether the proposed inputs are suitable for recurring research within a defined recent time window, such as the previous 24 hours.
+
+Consider whether some topics may generate few relevant discussions on certain days.
+
+Do not assume that every keyword will return useful results every day or that the platform's search system provides exhaustive coverage.
+
+6. Required Output
+
+6.1 Overall Assessment
+
+Classify the proposed inputs as:
+
+- Suitable as they are.
+- Suitable with modifications.
+- Unsuitable without substantial changes.
+
+Explain the most important reasons for your assessment.
+
+6.2 Primary Keyword Assessment
+
+Evaluate the proposed Primary Keyword, explaining its strengths, limitations, and alignment with the community.
+
+Recommend an alternative only if it would materially improve the research.
+
+6.3 Secondary Keyword Audit
+
+Present a table with these columns:
+
+Analytical Category | Original Keyword | Assessment | Explanation
+
+For Assessment, use one of the following:
+
+- Keep
+- Modify
+- Replace
+- Remove
+
+Assess every proposed Secondary Keyword. When recommending a modification or replacement, provide the suggested wording and explain the reason.
+
+6.4 Missing Research Angles
+
+Identify important topics, problems, questions, or search intentions that are not adequately covered by the existing keywords.
+
+Recommend additional keywords only when they fill a meaningful gap.
+
+6.5 Final Recommended Research Inputs
+
+Provide the final recommended Primary Keyword and complete Secondary Keyword list in a clean, copy-ready format.
+
+Keep the list relevant, diverse, coherent, and practical for recurring research on the specified platform.
+
+Group the Secondary Keywords into categories only when doing so improves clarity or usability.
+
+6.6 Platform-Specific Search Recommendations
+
+Briefly explain how the final keywords should be used on the specified platform.
+
+Recommend relevant search approaches and discovery features where appropriate.
+
+Clearly distinguish between verified capabilities, general recommendations, and limitations that require further checking.
+
+6.7 Expected Research Coverage
+
+Explain the types of discussions the recommended inputs are likely to uncover, the major areas they cover, and any meaningful limitations.
+
+7. Constraints
+
+- Do not invent evidence about search volumes, keyword popularity, audience demand, or discussion frequency.
+- Clearly distinguish reasoned predictions from findings supported by actual research.
+- Do not assume that a keyword is effective merely because it is relevant to the community.
+- Do not remove a keyword solely because it overlaps with another if it captures a distinct search intention.
+- Do not recommend additional keywords simply to make the list longer.
+- Do not assume platform features or search capabilities that have not been verified.
+- Preserve the community's stated purpose and interests.
+- Do not invent community details or silently change the intended research objective.
+- Do not write, suggest, or publish replies to posts.
+- Do not create or activate a recurring task during this evaluation.
+- If essential information is missing, identify it clearly rather than inventing an answer.
+
+The objective is to produce a well-aligned, practical, platform-appropriate set of research inputs—not merely a longer list of keywords.`;
+
+    function updatePrompts() {
+      const platformVal = document.getElementById('inputPlatform').value.trim() || "[INSERT PLATFORM NAME]";
+      const commNameVal = document.getElementById('inputCommName').value.trim() || "[INSERT COMMUNITY NAME]";
+      const commDescVal = document.getElementById('inputCommDesc').value.trim() || "[INSERT COMMUNITY DESCRIPTION]";
+      const primaryVal = document.getElementById('inputPrimaryKey').value.trim() || "[INSERT PRIMARY KEYWORD]";
+      const secondaryVal = document.getElementById('inputSecondaryKeys').value.trim() || "[INSERT SECONDARY KEYWORDS]";
+
+      let updatedText = promptTemplate
+        .split('[INSERT PLATFORM NAME]').join(platformVal)
+        .split('[INSERT COMMUNITY NAME]').join(commNameVal)
+        .split('[INSERT COMMUNITY DESCRIPTION]').join(commDescVal)
+        .split('[INSERT PRIMARY KEYWORD]').join(primaryVal)
+        .split('[INSERT SECONDARY KEYWORDS]').join(secondaryVal);
+
+      document.getElementById('p1').innerText = updatedText;
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
