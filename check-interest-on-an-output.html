@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check Interest - on an output</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 90px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Check Interest</h1>
+      <p class="sub-header">(on an output)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input Card 1 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 1</span>
+          <button class="clear-btn" onclick="resetInput('inputTask')">Reset</button>
+        </div>
+        <label for="inputTask">টুলটি যে কাজ করবে:</label>
+        <textarea id="inputTask" class="dynamic-input" placeholder="টুলটির কাজ এখানে লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 2 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 2</span>
+          <button class="clear-btn" onclick="resetInput('inputProblem')">Reset</button>
+        </div>
+        <label for="inputProblem">এটি যে সমস্যার সমাধান করবে:</label>
+        <textarea id="inputProblem" class="dynamic-input" placeholder="সমস্যার বিবরণ এখানে লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 3 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 3</span>
+          <button class="clear-btn" onclick="resetInput('inputResult')">Reset</button>
+        </div>
+        <label for="inputResult">টুলটি ব্যবহার করে কী ফল পাওয়া যায়:</label>
+        <textarea id="inputResult" class="dynamic-input" placeholder="প্রাপ্ত ফলাফলের বিবরণ এখানে লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 4 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 4</span>
+          <button class="clear-btn" onclick="resetInput('inputSampleInput')">Reset</button>
+        </div>
+        <label for="inputSampleInput">ইনপুট:</label>
+        <textarea id="inputSampleInput" class="dynamic-input" placeholder="টুলে দেওয়া ইনপুট এখানে লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 5 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 5</span>
+          <button class="clear-btn" onclick="resetInput('inputSampleOutput')">Reset</button>
+        </div>
+        <label for="inputSampleOutput">আউটপুট:</label>
+        <textarea id="inputSampleOutput" class="dynamic-input" placeholder="টুল থেকে পাওয়া ফলাফল এখানে লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Card -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Prompt #1</span>
+        </div>
+        <div class="prompt-content" id="p1"></div>
+        <button class="btn copy-btn" onclick="copyText('p1', this)">
+          <span>Copy Prompt #1</span>
+        </button>
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const promptTemplate = `আমি একটি নতুন টুল তৈরি করছি — আপনাদের মতামত চাই
+
+আমি একটি নতুন টুল তৈরি করছি, যার উদ্দেশ্য হল:
+
+টুলটি যে কাজ করবে:  
+[টুলটির কাজ]
+
+এটি যে সমস্যার সমাধান করবে:  
+[সমস্যার বিবরণ]
+
+টুলটি ব্যবহার করে কী ফল পাওয়া যায়:  
+[প্রাপ্ত ফলাফলের বিবরণ]
+
+পরীক্ষা করে দেখার নমুনা:
+
+- ইনপুট: [টুলে দেওয়া ইনপুট]
+- আউটপুট: [টুল থেকে পাওয়া ফলাফল]
+
+আমি জানতে চাই, এই টুলটিকে আরও কার্যকর করে তোলার জন্য আপনাদের কী পরামর্শ রয়েছে।
+
+বিশেষ করে, ফলাফলটি কতটা কার্যকর, কোথায় উন্নতির প্রয়োজন এবং কোন অতিরিক্ত সুবিধা থাকলে টুলটি আরও উপযোগী হবে—সে বিষয়ে আপনাদের মতামত জানতে আগ্রহী।`;
+
+    function updatePrompts() {
+      const taskVal = document.getElementById('inputTask').value.trim() || "[টুলটির কাজ]";
+      const problemVal = document.getElementById('inputProblem').value.trim() || "[সমস্যার বিবরণ]";
+      const resultVal = document.getElementById('inputResult').value.trim() || "[প্রাপ্ত ফলাফলের বিবরণ]";
+      const sampleInputVal = document.getElementById('inputSampleInput').value.trim() || "[টুলে দেওয়া ইনপুট]";
+      const sampleOutputVal = document.getElementById('inputSampleOutput').value.trim() || "[টুল থেকে পাওয়া ফলাফল]";
+
+      let updatedText = promptTemplate
+        .replace('[টুলটির কাজ]', taskVal)
+        .replace('[সমস্যার বিবরণ]', problemVal)
+        .replace('[প্রাপ্ত ফলাফলের বিবরণ]', resultVal)
+        .replace('[টুলে দেওয়া ইনপুট]', sampleInputVal)
+        .replace('[টুল থেকে পাওয়া ফলাফল]', sampleOutputVal);
+
+      document.getElementById('p1').innerText = updatedText;
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
