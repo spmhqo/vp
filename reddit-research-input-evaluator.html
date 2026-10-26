@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reddit Research Input Evaluator</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 110px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Reddit Research Input Evaluator</h1>
+      <p class="sub-header">(for Task)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input Card 1 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 1</span>
+          <button class="clear-btn" onclick="resetInput('inputCommunityName')">Reset</button>
+        </div>
+        <label for="inputCommunityName">Community Name:</label>
+        <textarea id="inputCommunityName" class="dynamic-input" placeholder="Type or paste Community Name here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 2 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 2</span>
+          <button class="clear-btn" onclick="resetInput('inputCommunityDescription')">Reset</button>
+        </div>
+        <label for="inputCommunityDescription">Community Description:</label>
+        <textarea id="inputCommunityDescription" class="dynamic-input" placeholder="Type or paste Community Description here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 3 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 3</span>
+          <button class="clear-btn" onclick="resetInput('inputPrimaryKeyword')">Reset</button>
+        </div>
+        <label for="inputPrimaryKeyword">Primary Keyword:</label>
+        <textarea id="inputPrimaryKeyword" class="dynamic-input" placeholder="Type or paste Primary Keyword here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Multiline Input Card 4 -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data 4</span>
+          <button class="clear-btn" onclick="resetInput('inputSecondaryKeywords')">Reset</button>
+        </div>
+        <label for="inputSecondaryKeywords">Secondary Keywords:</label>
+        <textarea id="inputSecondaryKeywords" class="dynamic-input" placeholder="Type or paste Secondary Keywords here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Card -->
+      <div id="promptsContainer">
+        <!-- Injected by JavaScript -->
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const promptTemplate = {
+      id: 1,
+      text: `Community Context
+
+Community Name: [Community Name]
+
+Community Description:
+
+[Community Description]
+
+Objective
+
+Evaluate whether the proposed Primary Keyword and Secondary Keywords are suitable inputs for a recurring Reddit research task intended to discover relevant discussions for this community.
+
+Assess the inputs in relation to both:
+1. The community's overall scope and purpose.
+2. Their practical usefulness for discovering relevant Reddit posts published within the previous 24 hours.
+
+Proposed Research Inputs
+
+Primary Keyword: [Primary Keyword]
+
+Secondary Keywords:
+
+[Secondary Keywords]
+
+Evaluation Instructions
+
+Evaluate the proposed inputs using the following criteria:
+
+1. Community Alignment: Determine whether the keywords reflect the community's scope, purpose, and practical learning focus.
+
+2. Primary Keyword Suitability: Assess whether the Primary Keyword represents the intended research territory accurately, provides a useful search starting point, and is sufficiently clear for Reddit research.
+
+3. Secondary Keyword Relevance: Determine whether each Secondary Keyword is relevant to the community and likely to uncover useful discussions.
+
+4. Search Intent Coverage: Assess whether the keywords cover different stages and aspects of the digital-product journey, including idea discovery, problem identification, validation, creation, pricing, marketing, sales, delivery, and customer feedback.
+
+5. Redundancy and Gaps: Identify keywords that overlap substantially, important missing search angles, and areas receiving disproportionate attention.
+
+6. Reddit Search Practicality: Assess whether each keyword is likely to work as a Reddit search query. Distinguish between broad topic terms, natural-language questions, problem-focused phrases, and terms that may be too abstract or commercially framed.
+
+7. Research Scope: Determine whether the Primary Keyword and Secondary Keywords work together coherently or whether the Secondary Keywords broaden the research beyond the intended scope of the Primary Keyword.
+
+Required Output
+
+1. Overall Assessment
+
+State whether the proposed inputs are suitable as they are, suitable with modifications, or unsuitable.
+
+Explain the most important reasons for your assessment.
+
+2. Primary Keyword Assessment
+
+Evaluate the current Primary Keyword and explain its strengths, limitations, and alignment with the community.
+
+If a different Primary Keyword would be more appropriate, recommend one and explain why. Do not recommend changing it merely to make the wording sound better.
+
+3. Secondary Keyword Audit
+
+Present a table with these columns:
+
+- Original Keyword
+- Assessment: Keep, Modify, Replace, or Remove
+- Reason
+
+Assess every proposed Secondary Keyword. Preserve useful keywords even when they overlap partially with other terms.
+
+4. Missing Search Angles
+
+Identify important research areas that are not adequately covered by the proposed keywords.
+
+Recommend additional keywords only when they fill a meaningful gap. Avoid adding terms simply to increase the number of keywords.
+
+5. Final Recommended Inputs
+
+Provide the final recommended Primary Keyword and complete Secondary Keyword list in a clean, copy-ready format.
+
+Keep the list focused, sufficiently broad for the community, and practical for daily Reddit research.
+
+6. Expected Research Coverage
+
+Briefly explain the types of Reddit discussions the recommended inputs should help discover, as well as any meaningful limitations.
+
+Constraints
+
+- Do not invent evidence about Reddit search volumes, keyword popularity, or the number of posts available.
+- Clearly distinguish reasoned predictions from findings supported by actual research.
+- Do not assume that every keyword will return relevant posts every day.
+- Do not remove a keyword merely because it overlaps with another if it captures a distinct search intent.
+- Preserve the community's emphasis on genuine learning, practical application, constructive discussion, and real-world challenges.
+- Do not write, suggest, or publish replies to Reddit posts.
+- Do not create or activate a recurring task during this evaluation. This stage is for assessing and finalising the research inputs only.`
+    };
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = `
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-label">Prompt #1</span>
+          </div>
+          <div class="prompt-content" id="p1"></div>
+          <button class="btn copy-btn" onclick="copyText('p1', this)">
+            <span>Copy Prompt #1</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function updatePrompts() {
+      const communityNameVal = document.getElementById('inputCommunityName').value.trim() || "[Community Name]";
+      const communityDescVal = document.getElementById('inputCommunityDescription').value.trim() || "[Community Description]";
+      const primaryKeywordVal = document.getElementById('inputPrimaryKeyword').value.trim() || "[Primary Keyword]";
+      const secondaryKeywordsVal = document.getElementById('inputSecondaryKeywords').value.trim() || "[Secondary Keywords]";
+
+      let updatedText = promptTemplate.text;
+      updatedText = updatedText.split('[Community Name]').join(communityNameVal);
+      updatedText = updatedText.split('[Community Description]').join(communityDescVal);
+      updatedText = updatedText.split('[Primary Keyword]').join(primaryKeywordVal);
+      updatedText = updatedText.split('[Secondary Keywords]').join(secondaryKeywordsVal);
+
+      document.getElementById('p1').innerText = updatedText;
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
