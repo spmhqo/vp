@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Community</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Create Community</h1>
+      <p class="sub-header">(of your own)</p>
+    </header>
+
+    <div class="prompt-workflow" id="promptsContainer">
+      <!-- Prompts injected by JavaScript -->
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const templates = [
+      {
+        id: 1,
+        text: `আমার এক্সপার্টিজ হ’ল – কিভাবে ডিজিট্যাল প্রোডাক্ট তৈরি করতে হয় ও কিভাবে ডিজিট্যাল প্রোডাক্ট অনলাইনে বিক্রি করতে হয়।
+আমি একটা reddit community-র মাধ্যমে আমার এক্সপার্টাইজ আমার অডিয়েন্সের সঙ্গে শেয়ার করতে চাই।
+এই কারনে আমি নিজের একটা reddit community এখন open করতে চাই।
+তুমি আমাকে এই নতুন কমিউনিটির নাম ও description লিখে দাও।
+নাম ও description যেন reddit terms, norms, and rules-কে strictly follow করে।
+RULE (MANDATORY)
+১, আমার উদ্দেশ্য কাউকে পুরস্কার দিয়ে আকৃষ্ট করা, পোস্ট ভাইরাল করা বা কৃত্রিমভাবে এনগেজমেন্ট বাড়ানো নয়। আমি নিজের তৈরি সফটওয়্যার, AI প্রম্পট বা ডিজিটাল প্রোডাক্ট স্বাভাবিকভাবে কমিউনিটির সঙ্গে শেয়ার করবো। যাঁদের সত্যিই আগ্রহ থাকবে, তাঁরা নিজের ইচ্ছায় ব্যবহার করবেন এবং চাইলে মতামত জানাবেন।
+২, এই কমিউনিটিতে এই চার ধরনের পোস্ট থাকবে:
+- Observations: আমি কোনও টুল ব্যবহার করে কী দেখলাম, কী শিখলাম বা কোন সমস্যা লক্ষ্য করলাম।
+- How-to-use: কোনও সফটওয়্যার, AI প্রম্পট বা ডিজিটাল টুল কীভাবে ব্যবহার করতে হয়।
+- Situational guidance: নির্দিষ্ট পরিস্থিতিতে কী করা যেতে পারে, এবং কেন।
+- Beta testing: নতুন প্রোডাক্ট পরীক্ষা, সমস্যা শনাক্ত করা ও উন্নতির পরামর্শ।
+৩, আমার নিজের প্রোডাক্টের সঙ্গে সম্পর্কহীন পর্যবেক্ষণ বা How-to পোস্টও প্রকাশ করবো। Reddit-এর নিজস্ব নির্দেশিকায় বলা হয়েছে, নিজের ব্যবসার লিংক বারবার প্রচার করার পরিবর্তে কমিউনিটিতে প্রকৃত আগ্রহভিত্তিক, সহায়ক কনটেন্ট দেওয়া উচিত। 
+৪, Community-র সবচেয়ে ভালো কাঠামো হবে: Learn → Observe → Apply → Test → Share Feedback। এতে জ্ঞান ভাগ করে নেওয়া এবং প্রোডাক্ট পরীক্ষা—দুটোই স্বাভাবিকভাবে চলবে।`
+      },
+      {
+        id: 2,
+        text: `I'll go for "Digital Product Workshop"
+এই কমিউনিটির description লিখে দাও`
+      },
+      {
+        id: 3,
+        text: `I'll go for:
+Community Name: "Digital Product Workshop"
+Community Description: "A practical community for learning to create, use, and sell digital products online. Explore software, AI prompts, and digital tools through observations, how-to guides, situational advice, and beta testing. Share what you learn, discuss real-world challenges, test new ideas, and offer constructive feedback. Relevant tools and products created by community members may be shared transparently. The focus is on genuine learning, practical application, and useful discussions—not promotional noise or artificial engagement."
+reddit-এ আমার নিজের এই কমিউনিটি-র জন্যে একটা community rule লিখে দাও।`
+      },
+      {
+        id: 4,
+        text: `add and integrate it: Reddit-এর Sitewide Rules এবং Spam Policy-ও আলাদাভাবে প্রযোজ্য হবে।`
+      },
+      {
+        id: 5,
+        text: `Rule Title: Keep Posts Relevant, Useful, and Transparent
+
+Rule Description:
+
+Posts should contribute to learning about creating, using, testing, or selling digital products online. Share relevant observations, how-to guides, situational advice, beta tests, and constructive feedback.
+
+You may share your own software, AI prompts, or digital products when relevant, but clearly disclose your affiliation and explain how the resource relates to the discussion.
+
+Avoid repetitive promotion, spam, misleading claims, artificial engagement, and posts that offer little value to the community. Participation and feedback must always remain voluntary.
+
+All posts and interactions must comply with Reddit’s Sitewide Rules and Spam Policy, which apply independently of this community rule. Content or activity that violates Reddit’s platform-wide policies may be subject to removal or other action.`
+      }
+    ];
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      templates.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = `
+          <div class="step-header">
+            <span class="step-label">Prompt #${t.id}</span>
+          </div>
+          <div class="prompt-content" id="p${t.id}"></div>
+          <button class="btn copy-btn" onclick="copyText('p${t.id}', this)">
+            <span>Copy Prompt #${t.id}</span>
+          </button>
+        `;
+        container.appendChild(card);
+        document.getElementById(`p${t.id}`).innerText = t.text;
+      });
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+    };
+  </script>
+</body>
+</html>
