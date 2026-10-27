@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>নিজের একটা উপলব্ধি - (শেয়ার করার জন্য)</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .sub-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      outline: none;
+      resize: vertical;
+      min-height: 140px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.7;
+      word-break: break-word;
+      max-height: 550px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .sub-header { font-size: 1rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>নিজের একটা উপলব্ধি</h1>
+      <p class="sub-header">(শেয়ার করার জন্য)</p>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Input Card -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data</span>
+          <button class="clear-btn" onclick="resetInput('inputText')">Reset</button>
+        </div>
+        <label for="inputText">[এখানে রিভিউ করার জন্য টেক্সটটি পেস্ট করুন]</label>
+        <textarea id="inputText" class="dynamic-input" placeholder="এখানে রিভিউ করার জন্য টেক্সটটি লিখুন বা পেস্ট করুন..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Cards Container -->
+      <div id="promptsContainer">
+        <!-- Prompts injected by JavaScript -->
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const templates = [
+      {
+        id: 1,
+        text: `এই টেক্সটটা রিভিউ করো।
+
+এই টেক্সটে আমি আমার একান্ত নিজস্ব একটি উপলব্ধি শেয়ার করেছি।
+
+তোমার কাজ আমার মতামত বদলানো নয়, কিংবা আমার মতামতের যৌক্তিকতা বা সত্যতা যাচাই করাও নয়। তোমার কাজ হলো আমাকে আমার বক্তব্যটা আরও ভালোভাবে প্রকাশ করতে সাহায্য করা, যাতে আমি আমার উপলব্ধিটাকে গুছিয়ে, সহজভাবে এবং একটি স্বাভাবিক ও যৌক্তিক প্রবাহ বজায় রেখে লিখতে পারি।
+
+রিভিউ করার সময় যে বিষয়গুলি মেনে চলবে:
+
+১. আমার বক্তব্য, উপলব্ধি, দৃষ্টিভঙ্গি ও অভিপ্রেত অর্থ অক্ষুণ্ণ রাখবে। আমি স্পষ্টভাবে না বললে আমার বক্তব্যের অর্থ বা উদ্দেশ্য পরিবর্তন করবে না।
+
+২. আমার বক্তব্যে নতুন ধারণা, যুক্তি, ব্যাখ্যা বা সিদ্ধান্ত যোগ করবে না। আমার বক্তব্যকে আরও গ্রহণযোগ্য করে তোলার জন্য নিজের থেকে কোনও ধারণা চাপিয়ে দেবে না।
+
+৩. লেখাটির স্বাভাবিক প্রবাহ, বাক্যগুলির পারস্পরিক সংযোগ, অনুচ্ছেদগুলির বিন্যাস এবং বক্তব্যের সামগ্রিক সংগঠন পর্যালোচনা করবে। কোথাও বক্তব্যের প্রবাহ বাধাগ্রস্ত হলে, পুনরাবৃত্তি থাকলে, অথবা কোনও ভাব যথাযথভাবে প্রকাশিত না হলে, সেগুলি চিহ্নিত করবে।
+
+৪. আমার বক্তব্যকে আরও সহজ, স্পষ্ট, স্বাভাবিক ও সাবলীলভাবে প্রকাশ করার জন্য কোথায় কী ধরনের পরিবর্তন আনা যেতে পারে, তা নির্দিষ্টভাবে ব্যাখ্যা করবে।
+
+৫. শুধু ব্যাকরণগত ভুল সংশোধনের মধ্যে রিভিউ সীমাবদ্ধ রাখবে না। আমার মূল বক্তব্য অক্ষুণ্ণ রেখে সেটিকে কীভাবে আরও স্বাভাবিক ও যৌক্তিক প্রবাহে প্রকাশ করা যায়, সেদিকেও মনোযোগ দেবে।
+
+৬. লেখাটি Medium.com-এ প্রকাশ করার উপযোগী করে তোলার বিষয়টি বিবেচনায় রাখবে। তবে প্রকাশনার উপযোগী করে তোলার নামে আমার নিজস্ব কণ্ঠস্বর, বক্তব্যের ধরন বা উপলব্ধির স্বাতন্ত্র্য নষ্ট করবে না।
+
+৭. আমি প্রথমে বাংলায় লিখব এবং পরে ইংরেজিতে অনুবাদ করব। তাই বাংলা লেখাটিকে এমনভাবে গুছিয়ে প্রকাশ করার পরামর্শ দেবে, যাতে পরবর্তী সময়ে মূল বক্তব্য, অর্থ ও অভিপ্রায় অক্ষুণ্ণ রেখে স্বাভাবিক, সাবলীল ও অর্থনিষ্ঠ ইংরেজিতে অনুবাদ করা সহজ হয়।
+
+রিভিউয়ের পদ্ধতি:
+
+প্রথমে লেখাটির সামগ্রিক প্রবাহ ও সংগঠন পর্যালোচনা করো। তারপর যেসব জায়গায় পরিবর্তন প্রয়োজন, সেগুলি চিহ্নিত করে প্রতিটি ক্ষেত্রে ব্যাখ্যা করো:
+
+- বর্তমান লেখায় কী সমস্যা রয়েছে।
+- কেন সেই জায়গায় পরিবর্তন আনা দরকার।
+- কী ধরনের পরিবর্তন আনলে বক্তব্যটি আরও ভালোভাবে প্রকাশিত হবে।
+
+প্রয়োজন হলে নির্দিষ্ট বাক্য বা অনুচ্ছেদের উদাহরণ দিয়ে বোঝাও। তবে আমার অনুমতি ছাড়া পুরো লেখাটি নতুন করে লিখবে না।
+
+তোমার প্রথম কাজ হলো আমাকে আমার বক্তব্যটি আরও ভালোভাবে প্রকাশ করার জন্য প্রয়োজনীয় পরিবর্তনগুলি বুঝতে সাহায্য করা। চূড়ান্ত পরিবর্তন গ্রহণ বা বর্জন করার সিদ্ধান্ত আমার।
+
+এখন রিভিউ করার জন্য দেওয়া টেক্সটটি মনোযোগ দিয়ে পড়ো এবং উপরোক্ত নির্দেশনা অনুসরণ করে রিভিউ শুরু করো।
+
+[এখানে রিভিউ করার জন্য টেক্সটটি পেস্ট করুন]`
+      }
+    ];
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = '';
+      templates.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = `
+          <div class="step-header">
+            <span class="step-label">Prompt #${t.id}</span>
+          </div>
+          <div class="prompt-content" id="p${t.id}"></div>
+          <button class="btn copy-btn" onclick="copyText('p${t.id}', this)">
+            <span>Copy Prompt #${t.id}</span>
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updatePrompts() {
+      const inputVal = document.getElementById('inputText').value.trim() || "[এখানে রিভিউ করার জন্য টেক্সটটি পেস্ট করুন]";
+
+      templates.forEach(t => {
+        let updatedText = t.text;
+        if (t.id === 1) {
+          updatedText = updatedText.split('[এখানে রিভিউ করার জন্য টেক্সটটি পেস্ট করুন]').join(inputVal);
+        }
+        document.getElementById(`p${t.id}`).innerText = updatedText;
+      });
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Initialize on page load
+    window.onload = () => {
+      createCards();
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
