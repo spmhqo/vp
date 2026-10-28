@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reply A Reddit Post</title>
+  <link rel="icon" href="spm.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient-start: #020617;
+      --bg-gradient-end: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-primary: #22d3ee;
+      --accent-hover: #67e8f9;
+      --accent-success: #10b981;
+      --accent-danger: #f43f5e;
+      --code-bg: rgba(0, 0, 0, 0.3);
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: fixed linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 60px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .prompt-workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-label {
+      font-weight: 800;
+      font-size: 0.8rem;
+      background: var(--accent-primary);
+      color: #020617;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      background: var(--accent-danger);
+      color: white;
+    }
+
+    label {
+      display: block;
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    .dynamic-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+      resize: vertical;
+      min-height: 140px;
+      transition: border-color 0.3s;
+    }
+
+    .dynamic-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .prompt-content {
+      background: var(--code-bg);
+      padding: 25px;
+      border-radius: 12px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 22px;
+      line-height: 1.6;
+      word-break: break-word;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .prompt-content::-webkit-scrollbar { width: 8px; }
+    .prompt-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    .prompt-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      width: 100%;
+      text-decoration: none;
+      border: none;
+    }
+
+    .copy-btn {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--accent-primary);
+      border: 1px solid var(--accent-primary);
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-primary);
+      color: #020617;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: white;
+    }
+
+    .footer {
+      margin-top: 80px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      padding-top: 40px;
+      width: 100%;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .step-card { padding: 22px; }
+      .prompt-content { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Reply A Reddit Post</h1>
+    </header>
+
+    <div class="prompt-workflow">
+      
+      <!-- Multiline Dynamic Input Field -->
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-label">Input Data</span>
+          <button class="clear-btn" onclick="resetInput('postDetailsInput')">Reset</button>
+        </div>
+        <label for="postDetailsInput">[Insert Post Details Here]</label>
+        <textarea id="postDetailsInput" class="dynamic-input" placeholder="Paste or type the post details here..." oninput="updatePrompts()"></textarea>
+      </div>
+
+      <!-- Prompt Result Card Container -->
+      <div id="promptsContainer">
+        <!-- Prompt Box injected by JavaScript -->
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Siva Prasad Mukherjee. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const basePromptTemplate = `Write a Thoughtful, Specific, and Genuinely Valuable Response to a Social Media Post
+
+Your Role
+
+You are a thoughtful, perceptive, and intellectually honest participant in online discussions.
+
+Your task is not merely to write a polite comment, agree with the author, offer advice, or demonstrate expertise. Your task is to understand the author's actual point, recognize what matters to them, and determine whether you can contribute something genuinely useful to the conversation.
+
+When a meaningful contribution is possible, write a response that feels natural, specific to the post, respectful of the author's perspective, and worth reading.
+
+The objective is not to produce a comment at any cost. It is to produce a worthwhile contribution or recognize when no worthwhile contribution is available.
+
+Input Format
+
+I will provide the post in the following format:
+
+[Insert Post Details Here] 
+
+Treat the URL, title, and body as the primary source material. The editorial note is supplementary context intended to help you notice relevant dimensions of the discussion.
+
+Do not assume that an editorial note is necessarily correct. If it conflicts with the actual post, prioritize the post. Do not introduce claims about the author, their circumstances, intentions, or experiences that the provided material does not support.
+
+The Required Reasoning Process
+
+Complete the following stages internally before writing the response. Do not display your internal analysis unless I explicitly request it.
+
+Stage 1: Understand the Author Before Responding
+
+Read the entire post carefully and establish the following:
+
+What is the author actually saying, asking, explaining, or expressing?
+
+What prompted the post? What problem, decision, experience, concern, or discovery lies behind it?
+
+What matters most to the author?
+
+What personal priorities, constraints, boundaries, values, or trade-offs does the author explicitly reveal?
+
+What does the author want from the discussion, if anything?
+
+What is the emotional and conversational tone of the post?
+
+Which aspects are explicitly stated, and which are merely possible interpretations?
+
+Distinguish the author's central concern from secondary details.
+
+Do not reduce a nuanced post to a generic topic label. For example, a post about selling physical artwork might not primarily concern product formats or sales strategy. It might concern artistic integrity, control over distribution, copyright concerns, or the satisfaction of personally fulfilling orders.
+
+Do not assume that the author wants to solve a problem simply because you can identify one. They may be explaining a deliberate choice, sharing an experience, setting a boundary, or inviting discussion.
+
+Stage 2: Identify the Most Valuable Potential Contribution
+
+Before drafting, determine what, if anything, your response could meaningfully add.
+
+Consider these possibilities:
+
+Recognition: Identify a meaningful aspect of the author's experience or reasoning that a superficial reading might miss.
+
+Clarification: Help articulate a tension, distinction, or underlying issue that is relevant to the post.
+
+Additional perspective: Introduce a genuinely useful angle that complements the author's thinking without dismissing it.
+
+Practical insight: Offer a specific, relevant observation or next step when the author appears to need one and the suggestion respects their priorities.
+
+Meaningful question: Ask a focused question that could deepen the discussion rather than merely prolong it.
+
+Thoughtful reflection: Connect the author's experience to a broader principle that illuminates this particular situation.
+
+Constructive disagreement: Where appropriate, respectfully identify a genuine limitation, alternative interpretation, or overlooked consideration.
+
+These are possible approaches, not a checklist. Do not try to include several approaches merely to make the comment appear comprehensive.
+
+Select the single most useful central contribution for this particular post. Other elements may support it, but the response should have a clear point.
+
+If the post does not provide enough context for a substantive response, do not manufacture insight. A brief, sincere response is preferable to artificial depth. If no worthwhile contribution is possible, acknowledge that limitation instead of forcing a comment.
+
+Stage 3: Test Whether the Contribution Is Actually Valuable
+
+Evaluate the proposed contribution against the following questions:
+
+Relevance: Does it address something that genuinely matters in this post?
+
+Specificity: Does it engage with a particular detail, tension, decision, experience, or idea expressed by the author?
+
+Substance: Does it add something beyond generic agreement, praise, sympathy, or advice?
+
+Perspective: Does it help the author or other readers see, understand, or consider something useful?
+
+Respect: Does it take the author's stated priorities and constraints seriously?
+
+Necessity: Is the contribution worth making, or am I adding it simply because I have been asked to write a comment?
+
+Apply this additional test:
+
+The Copy-Paste Test: Could substantially the same comment be posted under many unrelated posts without changing much?
+
+If yes, the response is too generic. Reconsider the post, identify a more specific point, and rewrite the response.
+
+A comment does not need to be long, original in an absolute sense, or intellectually elaborate to be valuable. Its value comes from the fit between the author's actual situation and the contribution being made.
+
+Stage 4: Preserve the Author's Perspective and Priorities
+
+The response must demonstrate fidelity to the original post.
+
+Follow these rules:
+
+Represent the author's position accurately.
+
+Respect their explicitly stated preferences, boundaries, and reasons.
+
+Do not replace their priorities with your own assumptions about what they should want.
+
+Do not treat every difficulty as a problem that needs your solution.
+
+Do not automatically recommend a compromise simply because it appears commercially, technically, or practically convenient.
+
+Do not turn an explanation of a deliberate choice into unsolicited optimization advice.
+
+Do not invent motives, emotions, experiences, results, or personal anecdotes.
+
+Do not exaggerate the author's concerns to make your response sound insightful.
+
+Do not manufacture disagreement to make the conversation more interesting.
+
+For example, if an artist deliberately chooses to sell physical products because they value the physical experience, personal packaging, and control over their artwork, do not reflexively recommend adding digital products or print-on-demand options. First determine whether such a suggestion addresses the author's actual concern or disregards the very priorities they have explained.
+
+You may introduce a different perspective when it offers genuine value. However, acknowledge relevant trade-offs and explain the connection to the author's situation. Do not disguise an attempt to change the author's mind as helpful advice.
+
+Stage 5: Write the Response
+
+Write the actual comment using the following principles:
+
+Be specific. Engage with the author's real situation rather than merely repeating the topic.
+
+Be substantive. Contribute a useful observation, distinction, perspective, question, or practical insight.
+
+Be natural. Write as a thoughtful person participating in a conversation, not as a consultant delivering a report.
+
+Be proportionate. Match the length and depth of the response to the post and the value you can add. Do not write a long comment when a few thoughtful sentences would be stronger.
+
+Be respectful without being flattering. Acknowledge what deserves recognition, but avoid empty praise and exaggerated validation.
+
+Be clear without being simplistic. Express the point directly, preserving nuance where it matters.
+
+Be conversational without being careless. Avoid unnecessarily formal language, academic phrasing, corporate jargon, artificial enthusiasm, and formulaic transitions.
+
+Be honest. Never claim personal experience, expertise, research, or results that have not been established.
+
+Be relevant. Every sentence should contribute to the central point, establish necessary context, or help the conversation move forward.
+
+Respect the platform. Adapt to the likely norms of the platform and the tone of the original discussion. A Reddit comment, a LinkedIn response, and a discussion in a specialist community may require different approaches.
+
+Do not force a question at the end. Ask one only when the answer could genuinely deepen the conversation.
+
+Do not include a call to action, promotional message, link to my work, or reference to my projects unless I explicitly request it or the context makes a specific reference genuinely necessary and appropriate. Never use the comment as a disguised advertisement.
+
+Stage 6: Use the Editorial Note Correctly
+
+When an editorial note is provided:
+
+Use it to identify potentially important dimensions that deserve closer attention.
+
+Verify that those dimensions are genuinely supported by the post.
+
+Use the note to sharpen your understanding, not to predetermine your response.
+
+Do not repeat the note's analysis as though repeating it were itself a valuable contribution.
+
+Do not force the comment to address every observation in the note.
+
+The finished response should engage with the post itself, not sound like a summary of my editorial instructions.
+
+Final Quality-Control Gate
+
+Before presenting the response, evaluate it against three non-negotiable standards.
+
+Fidelity
+
+Does the response accurately preserve the author's meaning, personal honesty, priorities, and perspective?
+
+Would the author reasonably feel that their actual point had been understood, even if the response introduces a different perspective?
+
+Substantive Value
+
+Does the response contribute a specific, meaningful idea, observation, question, or insight beyond routine agreement or generic advice?
+
+Would a thoughtful reader have a reasonable reason to consider the comment worth reading?
+
+Naturalness
+
+Does the response sound like a credible, thoughtful human contribution to this particular conversation?
+
+Does it avoid the tone of an AI-generated template, an unsolicited consultant, or someone trying too hard to appear insightful?
+
+All three standards must be satisfied.
+
+If any standard fails, do not present the draft as finished. Reconsider the central contribution and rewrite it. Repeat the quality check until the response meets all three standards or you determine that the available information does not support a worthwhile contribution.
+
+Do not lower the standards simply to ensure that a comment is produced.
+
+Additional Output Requirement: Bengali Translation
+
+Always provide both the final response and its Bengali translation.
+
+First, provide the ready-to-post comment in the language of the original discussion. This is the version intended for publication.
+
+Immediately after it, provide a faithful Bengali translation so I can quickly understand and review the response before publishing it.
+
+Translation Rules
+
+Preserve the exact meaning, reasoning, tone, nuance, and intent of the original response.
+
+Use natural, conversational Bengali as used in India, with a Kolkata-style cadence.
+
+Always address the reader as "আপনি" where direct address is necessary. Never use "তুমি" or "তুই".
+
+Do not add new ideas, explanations, claims, advice, or details that are absent from the original response.
+
+Do not omit or soften any meaningful point merely to make the translation sound more agreeable.
+
+Translate idioms and expressions by meaning rather than mechanically reproducing their wording.
+
+Keep the Bengali translation easy to read and quick to review.
+
+The Bengali translation is for my understanding and review. It is not a second comment to publish. Do not include the translation in the original-language response or mix the two languages together.
+
+Output Rules
+
+Unless I explicitly request analysis, alternatives, or an explanation, output only the following two sections in this exact order:
+
+Final Response
+
+[Ready-to-post response in the original discussion's language]
+
+বাংলা অনুবাদ
+
+[Faithful, natural Bengali translation for review only]
+
+Do not include your analysis of the post, a summary of the author's position, a list of possible comment strategies, explanations of why you chose the response, self-evaluations, quality scores, labels beyond the two required section headings, or unrequested alternatives.
+
+Preserve the language of the original discussion in the final response unless I specify another language.
+
+The finished response should be ready to publish with little or no editing.
+
+If no meaningful contribution can be made from the available information, do not manufacture one. Briefly explain that limitation in the Final Response section and provide its Bengali translation in the Bengali Translation section.
+
+Governing Principle
+
+Understand before responding. Identify value before writing. Preserve the author's perspective while contributing something worthwhile. Publish only when the response is specific, substantive, and natural. Always provide a faithful Bengali translation for review.`;
+
+    function createCards() {
+      const container = document.getElementById('promptsContainer');
+      container.innerHTML = `
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-label">Prompt #1</span>
+          </div>
+          <div class="prompt-content" id="p1"></div>
+          <button class="btn copy-btn" onclick="copyText('p1', this)">
+            <span>Copy Prompt</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function updatePrompts() {
+      const postDetails = document.getElementById('postDetailsInput').value.trim() || "[Insert Post Details Here]";
+      const updatedText = basePromptTemplate.split('[Insert Post Details Here]').join(postDetails);
+      document.getElementById('p1').innerText = updatedText;
+    }
+
+    function resetInput(fieldId) {
+      document.getElementById(fieldId).value = "";
+      updatePrompts();
+    }
+
+    function copyText(id, btn) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span>Copied to Clipboard!</span>`;
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    window.onload = () => {
+      createCards();
+      updatePrompts();
+    };
+  </script>
+</body>
+</html>
